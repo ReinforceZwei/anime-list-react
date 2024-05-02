@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { CssBaseline } from '@mui/material';
+import { loginSuccess, selectLoggedIn } from './redux/userSlice'
+import pb, { USER_COL } from './services/pocketbase'
+import LoginPage from './pages/loginPage'
+import DefaultLayout from './layouts/defaultLayout'
+import { themeOptions } from './themes.js';
+import MainPage from './pages/MainPage.jsx';
 
 function App() {
-  const [count, setCount] = useState(0)
+    const dispatch = useDispatch()
+    const reduxLoggedIn = useSelector(selectLoggedIn)
+    const loggedIn = reduxLoggedIn || pb?.authStore?.isValid
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    useEffect(() => {
+        if (!reduxLoggedIn && pb?.authStore?.isValid) {
+            dispatch(loginSuccess())
+        }
+    }, [])
+
+    const colorMode = 'system' // TODO: from user settings
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light'
+    const theme = useMemo(
+        () =>
+            createTheme({
+                ...themeOptions,
+                palette: {
+                    ...themeOptions.palette,
+                    mode: colorMode === 'system' ? prefersDarkMode : colorMode,
+                    
+                },
+            }),
+        [prefersDarkMode, colorMode],
+    );
+
+    const body = loggedIn ? <MainPage /> : loggedIn === undefined ? <div>Loading</div> : <LoginPage />
+
+    return (
+        <div>
+            <ThemeProvider theme={theme}>
+                {body}
+            </ThemeProvider>
+        </div>
+    )
 }
 
 export default App

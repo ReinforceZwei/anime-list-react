@@ -1,3 +1,4 @@
+import { Box, Container, Paper, Typography } from "@mui/material";
 import AnimeList from "../components/AnimeList/AnimeList";
 
 
@@ -5,10 +6,10 @@ import AnimeList from "../components/AnimeList/AnimeList";
 export default function DefaultLayout() {
 
     return (
-        <>
-        <h1>Anime List</h1>
-        <AnimeList title="Watched" filter="status = 'finished'" sort="+created" />
-        <AnimeList title="To Watch" filter="status = 'pending'" sort="+created" />
-        </>
+        <Box>
+            <Typography variant="h3" align="center">Anime List</Typography>
+            <AnimeList title="Watched" filter="status = 'finished'" sort="+finish_time" />
+            <AnimeList title="To Watch" filter="status = 'pending'" sort="+created" />
+        </Box>
     )
 }

@@ -7,5 +7,6 @@ pocketbase.autoCancellation(false)
 
 export const USER_COL = 'users'
 export const ANIME_COL = 'animes'
+export const TAG_COL = 'tags'
 
 export default pocketbase

@@ -2,12 +2,13 @@ import { useEffect, useState, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { deepmerge } from '@mui/utils'
 import { CssBaseline } from '@mui/material';
 import { loginSuccess, selectLoggedIn } from './redux/userSlice'
 import pb, { USER_COL } from './services/pocketbase'
 import LoginPage from './pages/loginPage'
 import DefaultLayout from './layouts/defaultLayout'
-import { themeOptions } from './themes.js';
+import { themeOptions, statusLightColorTheme, statusDarkColorTheme } from './themes.js';
 import MainPage from './pages/MainPage.jsx';
 
 function App() {
@@ -23,16 +24,16 @@ function App() {
 
     const colorMode = 'system' // TODO: from user settings
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light'
+    const mode = colorMode === 'system' ? prefersDarkMode : colorMode
+    const statusColor = mode == 'light' ? statusLightColorTheme : statusDarkColorTheme
     const theme = useMemo(
         () =>
-            createTheme({
-                ...themeOptions,
+            createTheme(deepmerge(themeOptions, {
                 palette: {
-                    ...themeOptions.palette,
-                    mode: colorMode === 'system' ? prefersDarkMode : colorMode,
-                    
+                    mode: mode,
                 },
-            }),
+                ...statusColor,
+            })),
         [prefersDarkMode, colorMode],
     );
 
@@ -41,6 +42,7 @@ function App() {
     return (
         <div>
             <ThemeProvider theme={theme}>
+                <CssBaseline />
                 {body}
             </ThemeProvider>
         </div>

@@ -1,4 +1,6 @@
+import { Typography } from "@mui/material"
 import { useGetAnimesWithOptionQuery } from "../../redux/animeSlice"
+import AnimeListItem from "./AnimeListItem"
 
 
 const AnimeListProps = {
@@ -18,11 +20,11 @@ export default function AnimeList(props = AnimeListProps) {
 
     return (
         <div>
-            { title && <h2>{title}</h2> }
+            { title && <Typography variant="subtitle1" align="center">{title}</Typography> }
             { isLoading ? (<div>Loading</div>) : (
                 <ol>
                 {data.map((anime) => (
-                    <li key={anime.id}>{anime.name}</li>
+                    <AnimeListItem key={anime.id} name={anime.name} status={anime.status} downloadStatus={anime.download_status} tags={anime.tags} />
                 ))}
                 </ol>
             )}
